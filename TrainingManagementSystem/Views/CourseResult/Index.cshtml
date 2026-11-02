@@ -1,0 +1,41 @@
+﻿@model List<CourseResult>
+@{
+	ViewData["Title"] = "Index";
+}
+
+<h1>CourseResult</h1>
+<a asp-action="Create" asp-controller="CourseResult" class="btn btn-success">Create</a>
+<table class="table table-bordered table-hover">
+	<thead>
+		<tr>
+			<th>Trainee</th>
+			<th>Course</th>
+			<th>Degree</th>
+			<th>ResultDate</th>
+			<th>Edit</th>
+			<th>Delete</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach(var crsResult in Model)
+		{
+			<tr>
+				<td>@crsResult.CourseEnrollment.Trainee.Name</td>
+				<td>@crsResult.CourseEnrollment.Course.Name</td>
+				<td>@crsResult.Degree</td>
+				<td>@crsResult.ResultDate</td>
+				<td>
+					<a asp-action="Edit" asp-controller="CourseResult" asp-route-id="@crsResult.EnrollmentId">Edit</a>
+				</td>
+				<td>
+					<form method="post" asp-action="Delete" asp-controller="CourseResult" asp-route-id="@crsResult.EnrollmentId">
+						<button type="submit" class="btn btn-danger btn-sm"
+								onclick="return confirm('Are you sure you want to delete this CourseResult?');">
+							Delete
+						</button>
+					</form>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

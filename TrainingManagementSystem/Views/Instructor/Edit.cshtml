@@ -1,0 +1,35 @@
+﻿@model InstructorFormViewModel
+@{
+	ViewData["Title"] = "Edit";
+}
+
+<form method="post" asp-action="Edit" asp-controller="Instructor" asp-route-id="@Model.Id">
+
+	<div>
+		<label asp-for="Name"></label>
+		<input asp-for="Name" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="Email"></label>
+		<input asp-for="Email" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="Phone"></label>
+		<input asp-for="Phone" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="Address"></label>
+		<input asp-for="Address" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="ImageURL"></label>
+		<input asp-for="ImageURL" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="DeptId"></label>
+		<select asp-for="DeptId" asp-items="Model.Departments">
+		</select>
+	</div>
+	
+	<input type="submit" value="Save" class="btn btn-success"/>
+</form>

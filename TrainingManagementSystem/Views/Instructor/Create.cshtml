@@ -1,0 +1,36 @@
+﻿@model InstructorFormViewModel
+
+@{
+	ViewData["Titel"] = "Create";
+}
+
+<form method="post" asp-action="Create" asp-controller="Instructor">
+	<div>
+		<label asp-for="Name"></label>
+		<input asp-for="Name" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="Email"></label>
+		<input asp-for="Email" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="Phone"></label>
+		<input asp-for="Phone" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="Address"></label>
+		<input asp-for="Address" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="ImageURL"></label>
+		<input asp-for="ImageURL" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="DeptId"></label>
+		<select asp-for="DeptId" asp-items="Model.Departments" class="form-control">
+			<option value="-1">--Select Department--</option>
+		</select>
+	</div>
+
+	<input type="submit" value="Save" class="btn btn-success"/>
+</form>

@@ -1,0 +1,13 @@
+﻿@model Department
+@{
+	ViewData["Title"] = "Delete";
+}
+<form method="post" asp-action="ConfirmDelete" asp-controller="Department" asp-route-id="@Model?.Id">
+	<div>
+		<p>Name:@Model.Name</p>
+	</div>
+	<div>
+		<p>Description:@Model.Description</p>
+	</div>
+	<input type="submit" value="Delete" class="btn btn-danger" />
+</form>

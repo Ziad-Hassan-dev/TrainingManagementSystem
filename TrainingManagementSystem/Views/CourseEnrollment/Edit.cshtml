@@ -1,0 +1,32 @@
+﻿@model CourseEnrollmentFormViewModel
+@{
+	ViewData["Title"] = "Create";
+}
+
+<form method="post" asp-action="Edit" asp-controller="CourseEnrollment" asp-route-id="@Model.Id">
+	<div>
+		<label asp-for="EnrollmentDate"></label>
+		<input asp-for="EnrollmentDate" class="form-control"/>
+	</div>
+	<div>
+		<label asp-for="Status"></label>
+		<select asp-for="Status" asp-items="Html.GetEnumSelectList<EnrollmentStatus>()"
+			class="form-control"	
+		>
+			<option value="-1">--Select Status--</option>
+		</select>
+	</div>
+	<div>
+		<label asp-for="CourseId"></label>
+		<select asp-for="CourseId" asp-items="Model.Course" class="form-control">
+			<option value="-1">--Select Course--</option>
+		</select>
+	</div>
+	<div>
+		<label asp-for="TraineeId"></label>
+		<select asp-for="TraineeId" asp-items="Model.Trainee" class="form-control">
+			<option value="-1">--Select Trainee--</option>
+		</select>
+	</div>
+	<input type="submit" value="Save" class="btn btn-success"/>
+</form>
