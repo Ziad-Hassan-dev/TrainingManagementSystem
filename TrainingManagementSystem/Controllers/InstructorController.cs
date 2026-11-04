@@ -35,18 +35,28 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost, ActionName("Create")]
         public IActionResult ConfirmCreate(InstructorFormViewModel insFromRequest)
         {
-            if (insFromRequest.Name != null && insFromRequest.DeptId != 0)
+            if (ModelState.IsValid)
             {
-                Instructor insdb = new Instructor();
-                insdb.Name = insFromRequest.Name;
-                insdb.Email = insFromRequest.Email;
-                insdb.Address = insFromRequest.Address;
-                insdb.DeptId = insFromRequest.DeptId;
-                insdb.Phone = insFromRequest.Phone;
-                insdb.ImageURL = insFromRequest.ImageURL;
-                context.Instructors.Add(insdb);
-                context.SaveChanges();
-                return RedirectToAction("Index");
+                bool exists = 
+                    context.Departments.Any(d => d.Id == insFromRequest.DeptId);
+                if (exists)
+                {
+                    Instructor insdb = new Instructor();
+
+                    insdb.Name = insFromRequest.Name;
+                    insdb.Email = insFromRequest.Email;
+                    insdb.Address = insFromRequest.Address;
+                    insdb.DeptId = insFromRequest.DeptId;
+                    insdb.Phone = insFromRequest.Phone;
+                    insdb.ImageURL = insFromRequest.ImageURL?.Trim() ?? "";
+                    context.Instructors.Add(insdb);
+                    context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError("DeptId", "Please select a valid department");
+                }
             }
 
             insFromRequest.Departments =
@@ -60,7 +70,7 @@ namespace TrainingManagementSystem.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            Instructor insModel = context.Instructors.FirstOrDefault(i => i.Id == id);
+            Instructor? insModel = context.Instructors.FirstOrDefault(i => i.Id == id);
             
             if (insModel != null)
             {
@@ -83,21 +93,32 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost,ActionName("Edit")]
         public IActionResult ConfirmEdit(InstructorFormViewModel insFromRequest)
         {
-            if (insFromRequest.Name != null && insFromRequest.DeptId != 0)
+            if (ModelState.IsValid)
             {
-                Instructor insdb = context.Instructors.FirstOrDefault(i => i.Id == insFromRequest.Id);
-                
-                insdb.Name = insFromRequest.Name;
-                insdb.Address = insFromRequest.Address;
-                insdb.Phone = insFromRequest.Phone;
-                insdb.Email = insFromRequest.Email;
-                insdb.ImageURL = insFromRequest.ImageURL;
-                insdb.DeptId = insFromRequest.DeptId;
-                context.SaveChanges();
-                return RedirectToAction("Index");
+                bool exists =
+                    context.Departments.Any(d => d.Id == insFromRequest.DeptId);
+                if (exists)
+                {
+                    Instructor? insdb =
+                    context.Instructors.FirstOrDefault(i => i.Id == insFromRequest.Id);
+
+                    insdb.Name = insFromRequest.Name;
+                    insdb.Address = insFromRequest.Address;
+                    insdb.Phone = insFromRequest.Phone;
+                    insdb.Email = insFromRequest.Email;
+                    insdb.ImageURL = insFromRequest.ImageURL?.Trim() ?? "";
+                    insdb.DeptId = insFromRequest.DeptId;
+                    context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError("DeptId", "Please select a valid department");
+                }
             }
 
-            insFromRequest.Departments = new SelectList(context.Departments.ToList(), "Id", "Name");
+            insFromRequest.Departments = 
+                new SelectList(context.Departments.ToList(), "Id", "Name");
             return View("Edit", insFromRequest);
         }
 
@@ -107,7 +128,7 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            Instructor insdb = context.Instructors.FirstOrDefault(i => i.Id == id);
+            Instructor? insdb = context.Instructors.FirstOrDefault(i => i.Id == id);
             if (insdb == null)
                 return NotFound("Instructor Not Found");
 
