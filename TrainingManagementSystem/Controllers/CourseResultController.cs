@@ -49,7 +49,20 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost, ActionName("Create")]
         public IActionResult ConfirmCreate(CourseResultFormViewModel resultFromRequest)
         {
-            if (resultFromRequest.EnrollmentId != -1)
+            bool validEnrollment =
+                context.CourseEnrollments.Any(e =>
+                e.Id == resultFromRequest.EnrollmentId &&
+                e.Status != EnrollmentStatus.Cancelled
+                );
+            bool resultExists =
+                context.CourseResults
+                .Any(r => r.EnrollmentId == resultFromRequest.EnrollmentId);
+            if (!validEnrollment)
+                ModelState.AddModelError("EnrollmentId", "Please select a valid enrollment (not cancelled)");
+            else if (resultExists)
+                ModelState.AddModelError("EnrollmentId", "This enrollment already has a result");
+
+            if (ModelState.IsValid)
             {
                 CourseResult courseResult = new CourseResult();
                 courseResult.EnrollmentId = resultFromRequest.EnrollmentId;
@@ -69,7 +82,7 @@ namespace TrainingManagementSystem.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            CourseResult courseResult = context.CourseResults.FirstOrDefault(cr => cr.EnrollmentId == id);
+            CourseResult? courseResult = context.CourseResults.FirstOrDefault(cr => cr.EnrollmentId == id);
             if (courseResult == null)
                 return NotFound("CourseResult Not Found");
 
@@ -88,14 +101,21 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost, ActionName("Edit")]
         public IActionResult ConfirmEdit(CourseResultFormViewModel resultFromRequest)
         {
-            if (resultFromRequest.EnrollmentId != -1)
+            bool validEnrollment =
+                context.CourseEnrollments.Any(e =>
+                e.Id == resultFromRequest.EnrollmentId &&
+                e.Status != EnrollmentStatus.Cancelled
+                );
+
+            if(!validEnrollment)
+                ModelState.AddModelError("EnrollmentId", "Please select a valid enrollment (not cancelled)");
+            if (ModelState.IsValid)
             {
-                CourseResult courseResult =
+                CourseResult? courseResult =
                     context.CourseResults
                     .FirstOrDefault
                     (cr => cr.EnrollmentId == resultFromRequest.EnrollmentId);
 
-                courseResult.EnrollmentId = resultFromRequest.EnrollmentId;
                 courseResult.Degree = resultFromRequest.Degree;
                 courseResult.ResultDate = resultFromRequest.ResultDate;
                 context.SaveChanges();
@@ -103,12 +123,8 @@ namespace TrainingManagementSystem.Controllers
             }
             var enrollments = context.CourseEnrollments
                 .Select(e => new { Id = e.Id, Text = e.Trainee.Name + " " + e.Course.Name });
-
-            var vm = new CourseResultFormViewModel()
-            {
-                Enrollments = new SelectList(enrollments, "Id", "Text")
-            };
-            return View("Edit", vm);
+            resultFromRequest.Enrollments = new SelectList(enrollments, "Id", "Text");
+            return View("Edit", resultFromRequest);
         }
 
         #endregion

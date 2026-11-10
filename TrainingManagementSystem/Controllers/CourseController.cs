@@ -37,22 +37,30 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost, ActionName("Create")]
         public IActionResult ConfirmCreate(CourseFormViewModel crsFromRequest)
         {
-            if (crsFromRequest.Name != null && crsFromRequest.DeptId != 0 && crsFromRequest.InsId != 0)
+            bool existsDept =
+                    context.Departments.Any(d => d.Id == crsFromRequest.DeptId);
+            bool existsIns =
+                context.Instructors.Any(i => i.Id == crsFromRequest.InsId);
+            if (!existsDept)
+                ModelState.AddModelError("DeptId", "Please select a valid department");
+            if (!existsIns)
+                ModelState.AddModelError("InsId", "Please select a valid instructor");
+            if (ModelState.IsValid)
             {
-                Course newCourse = new Course()
-                {
-                    Id = crsFromRequest.Id,
-                    Name = crsFromRequest.Name,
-                    Description = crsFromRequest.Description,
-                    Degree = crsFromRequest.Degree,
-                    MinDegree = crsFromRequest.MinDegree,
-                    Hours = crsFromRequest.Hours,
-                    DeptId = crsFromRequest.DeptId,
-                    InsId = crsFromRequest.InsId,
-                };
-                context.Courses.Add(newCourse);
-                context.SaveChanges();
-                return RedirectToAction("Index");
+                    Course newCourse = new Course()
+                    {
+                        Id = crsFromRequest.Id,
+                        Name = crsFromRequest.Name.Trim(),
+                        Description = crsFromRequest.Description.Trim(),
+                        Degree = crsFromRequest.Degree,
+                        MinDegree = crsFromRequest.MinDegree,
+                        Hours = crsFromRequest.Hours,
+                        DeptId = crsFromRequest.DeptId,
+                        InsId = crsFromRequest.InsId,
+                    };
+                    context.Courses.Add(newCourse);
+                    context.SaveChanges();
+                    return RedirectToAction("Index");
             }
 
             crsFromRequest.Departments = new SelectList(context.Departments.ToList(), "Id", "Name");
@@ -65,7 +73,8 @@ namespace TrainingManagementSystem.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            Course crsModel = context.Courses.FirstOrDefault(c => c.Id == id);
+            Course? crsModel = 
+                context.Courses.FirstOrDefault(c => c.Id == id);
             if (crsModel == null)
                 return NotFound("Course Not Found");
 
@@ -89,13 +98,22 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost, ActionName("Edit")]
         public IActionResult ConfirmEdit(CourseFormViewModel crsFromRequest)
         {
-            if (crsFromRequest.Name != null && crsFromRequest.InsId != 0 && crsFromRequest.DeptId != 0)
+            bool existsDept =
+                context.Departments.Any(d => d.Id == crsFromRequest.Id);
+            bool existsIns =
+                context.Instructors.Any(i => i.Id == crsFromRequest.Id);
+            if (!existsDept)
+                ModelState.AddModelError("DeptId", "Please select a valid department");
+            if (!existsIns)
+                ModelState.AddModelError("InsId", "Please select a valid instructor");
+
+            if (ModelState.IsValid)
             {
-                Course crsdb =
-                    context.Courses.FirstOrDefault(c => c.Id == crsFromRequest.Id);
-                
-                crsdb.Name = crsFromRequest.Name;
-                crsdb.Description = crsFromRequest.Description;
+                Course? crsdb =
+                context.Courses.FirstOrDefault(c => c.Id == crsFromRequest.Id);
+
+                crsdb.Name = crsFromRequest.Name.Trim();
+                crsdb.Description = crsFromRequest.Description.Trim();
                 crsdb.Degree = crsFromRequest.Degree;
                 crsdb.MinDegree = crsFromRequest.MinDegree;
                 crsdb.Hours = crsFromRequest.Hours;
@@ -115,7 +133,7 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            Course crs = context.Courses.FirstOrDefault(c => c.Id == id);
+            Course? crs = context.Courses.FirstOrDefault(c => c.Id == id);
             if (crs == null)
                 return NotFound("Course Not Found");
 

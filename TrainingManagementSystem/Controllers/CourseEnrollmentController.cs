@@ -36,7 +36,26 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost, ActionName("Create")]
         public IActionResult ConfirmCreate(CourseEnrollmentFormViewModel enrollmentFromRequest)
         {
-            if ((int)enrollmentFromRequest.Status != -1 && enrollmentFromRequest.CourseId != -1 && enrollmentFromRequest.TraineeId != -1)
+            bool existsTrainee =
+                context.Trainees.Any(t => t.Id == enrollmentFromRequest.TraineeId);
+            bool existsCourse =
+                context.Courses.Any(c => c.Id == enrollmentFromRequest.CourseId);
+            bool alreadyEnrolled =
+                context.CourseEnrollments.Any(e =>
+                e.TraineeId == enrollmentFromRequest.TraineeId &&
+                e.CourseId == enrollmentFromRequest.CourseId &&
+                e.Status != EnrollmentStatus.Cancelled &&
+                e.Id != enrollmentFromRequest.Id
+                );
+
+            if (!existsCourse)
+                ModelState.AddModelError("CourseId", "Please select a valid Course");
+            if (!existsTrainee)
+                ModelState.AddModelError("TraineeId", "Please select a valid Trainee");
+            if (alreadyEnrolled)
+                ModelState.AddModelError("", "This trainee is already enrolled in this course");
+
+            if (ModelState.IsValid) 
             {
                 CourseEnrollment enrollment = new CourseEnrollment();
                 enrollment.EnrollmentDate = enrollmentFromRequest.EnrollmentDate;
@@ -45,7 +64,7 @@ namespace TrainingManagementSystem.Controllers
                 enrollment.TraineeId = enrollmentFromRequest.TraineeId;
                 context.CourseEnrollments.Add(enrollment);
                 context.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index");                
             }
             enrollmentFromRequest.Course = new SelectList(context.Courses.ToList(), "Id", "Name");
             enrollmentFromRequest.Trainee = new SelectList(context.Trainees.ToList(), "Id", "Name");
@@ -57,7 +76,7 @@ namespace TrainingManagementSystem.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            CourseEnrollment courseEnrollment = context.CourseEnrollments.FirstOrDefault(ce => ce.Id == id);
+            CourseEnrollment? courseEnrollment = context.CourseEnrollments.FirstOrDefault(ce => ce.Id == id);
             if (courseEnrollment == null)
                 return NotFound("CourseEnrollments Not Found");
 
@@ -78,16 +97,36 @@ namespace TrainingManagementSystem.Controllers
         public IActionResult ConfirmEdit(CourseEnrollmentFormViewModel enrollmentFromRequest)
         {
 
-            if ((int)enrollmentFromRequest.Status != -1 && enrollmentFromRequest.CourseId != -1 && enrollmentFromRequest.TraineeId != -1)
+            bool existsTrainee =
+                context.Trainees.Any(t => t.Id == enrollmentFromRequest.TraineeId);
+            bool existsCourse =
+                context.Courses.Any(c => c.Id == enrollmentFromRequest.CourseId);
+            bool alreadyEnrolled =
+                context.CourseEnrollments.Any(e =>
+                e.TraineeId == enrollmentFromRequest.TraineeId &&
+                e.CourseId == enrollmentFromRequest.CourseId &&
+                e.Status != EnrollmentStatus.Cancelled &&
+                e.Id != enrollmentFromRequest.Id
+                );
+
+            if (!existsCourse)
+                ModelState.AddModelError("CourseId", "Please select a valid Course");
+            if (!existsTrainee)
+                ModelState.AddModelError("TraineeId", "Please select a valid Trainee");
+            if (alreadyEnrolled)
+                ModelState.AddModelError("", "This trainee is already enrolled in this course");
+
+            if (ModelState.IsValid)
             {
-                CourseEnrollment enrollment = context.CourseEnrollments.FirstOrDefault(ce => ce.Id == enrollmentFromRequest.Id);
-                
-                enrollment.EnrollmentDate = enrollmentFromRequest.EnrollmentDate;
-                enrollment.Status = enrollmentFromRequest.Status;
-                enrollment.CourseId = enrollmentFromRequest.CourseId;
-                enrollment.TraineeId = enrollmentFromRequest.TraineeId;
-                context.SaveChanges();
-                return RedirectToAction("Index");
+                    CourseEnrollment? enrollment =
+                        context.CourseEnrollments.FirstOrDefault(ce => ce.Id == enrollmentFromRequest.Id);
+
+                    enrollment.EnrollmentDate = enrollmentFromRequest.EnrollmentDate;
+                    enrollment.Status = enrollmentFromRequest.Status;
+                    enrollment.CourseId = enrollmentFromRequest.CourseId;
+                    enrollment.TraineeId = enrollmentFromRequest.TraineeId;
+                    context.SaveChanges();
+                    return RedirectToAction("Index");
             }
 
             enrollmentFromRequest.Course = new SelectList(context.Courses.ToList(), "Id", "Name");

@@ -5,35 +5,43 @@
 <form method="post" asp-action="Create" asp-controller="Course">
 	<div>
 		<label asp-for="Name"></label>
-		<input asp-for="Name" class="form-control"/>
+		<input asp-for="Name" class="form-control" />
+		<span asp-validation-for="Name" class="text-danger"></span>
 	</div>
 	<div>
 		<label asp-for="Description"></label>
-		<input asp-for="Description" class="form-control"/>
+		<input asp-for="Description" class="form-control" />
+		<span asp-validation-for="Description" class="text-danger"></span>
 	</div>
 	<div>
 		<label asp-for="Degree"></label>
-		<input asp-for="Degree" class="form-control"/>
+		<input asp-for="Degree" class="form-control" />
+		<span asp-validation-for="Degree" class="text-danger"></span>
 	</div>
 	<div>
 		<label asp-for="MinDegree"></label>
-		<input asp-for="MinDegree" class="form-control"/>
+		<input asp-for="MinDegree" class="form-control" />
+		<span asp-validation-for="MinDegree" class="text-danger"></span>
 	</div>
 	<div>
 		<label asp-for="Hours"></label>
-		<input asp-for="Hours" class="form-control"/>
+		<input asp-for="Hours" class="form-control" />
+		<span asp-validation-for="Hours" class="text-danger"></span>
 	</div>
 	<div>
 		<label asp-for="DeptId"></label>
 		<select asp-for="DeptId" asp-items="@Model.Departments" class="form-control">
 			<option value="0">--Selected Department--</option>
 		</select>
+		<span asp-validation-for="DeptId" class="text-danger"></span>
 	</div>
 	<div>
 		<label asp-for="InsId"></label>
 		<select asp-for="InsId" asp-items="@Model.Instructors" class="form-control">
 			<option value="0">--Selected Instructor--</option>
 		</select>
+		<span asp-validation-for="InsId" class="text-danger"></span>
 	</div>
-	<input type="submit" value="Save" class="btn btn-success"/>
+
+	<input type="submit" value="Save" class="btn btn-success" />
 </form>
