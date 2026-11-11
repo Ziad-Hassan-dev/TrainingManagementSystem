@@ -95,9 +95,17 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            Trainee trainee = context.Trainees.FirstOrDefault(t => t.Id == id);
+            Trainee? trainee = context.Trainees.FirstOrDefault(t => t.Id == id);
             if (trainee == null)
                 return NotFound("Trainee Not Found");
+
+            bool hasEnrollments =
+                context.CourseEnrollments.Any(e => e.TraineeId == id);
+            if (hasEnrollments)
+            {
+                TempData["Error"] = "Cannot delete: this trainee has enrollments";
+                return RedirectToAction("Index");
+            }
 
             context.Trainees.Remove(trainee);
             context.SaveChanges();

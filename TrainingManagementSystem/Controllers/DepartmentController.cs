@@ -81,7 +81,8 @@ namespace TrainingManagementSystem.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            Department deptModel = context.Departments.FirstOrDefault(d => d.Id == id);
+            Department? deptModel = 
+                context.Departments.FirstOrDefault(d => d.Id == id);
             if (deptModel != null)
             {
                 return View("Delete", deptModel);
@@ -91,9 +92,22 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost]
         public IActionResult ConfirmDelete(int id)
         {
-            Department deptFromDB = context.Departments.FirstOrDefault(d => d.Id == id);
+            Department? deptFromDB = 
+                context.Departments.FirstOrDefault(d => d.Id == id);
             if (deptFromDB == null)
                 return NotFound("Department Not Found");
+
+            bool hasInstructor = 
+                context.Instructors.Any(i => i.DeptId == id);
+            bool hasCourse = 
+                context.Courses.Any(c => c.DeptId == id);
+
+            if(hasInstructor || hasCourse)
+            {
+                TempData["Error"] = "Cannot delete: this department has instructors or courses";
+                return RedirectToAction("Index");
+            }
+
             context.Departments.Remove(deptFromDB);
             context.SaveChanges();
             return RedirectToAction("Index");

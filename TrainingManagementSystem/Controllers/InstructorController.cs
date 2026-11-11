@@ -128,9 +128,18 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            Instructor? insdb = context.Instructors.FirstOrDefault(i => i.Id == id);
+            Instructor? insdb = 
+                context.Instructors.FirstOrDefault(i => i.Id == id);
             if (insdb == null)
                 return NotFound("Instructor Not Found");
+
+            bool teachCourses =
+                context.Courses.Any(c => c.InsId == id);
+            if(teachCourses)
+            {
+                TempData["Error"] = "Cannot delete: this instructor teaches courses";
+                return RedirectToAction("Index");
+            }
 
             context.Instructors.Remove(insdb);
             context.SaveChanges();

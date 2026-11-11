@@ -4,6 +4,10 @@
 }
 <h1>Courses</h1>
 <a asp-action="Create" asp-controller="Course" class="btn btn-success">Create</a>
+@if (TempData["Error"] != null)
+{
+	<div class="alert alert-danger m-3">@TempData["Error"]</div>
+}
 <table class="table table-bordered table-hoverd">
 	<thead>
 		<tr>

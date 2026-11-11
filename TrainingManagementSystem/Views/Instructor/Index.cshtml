@@ -5,6 +5,10 @@
 
 <h1>Instructors</h1>
 <a asp-action="Create" asp-controller="Instructor" class="btn btn-success">Create</a>
+@if (TempData["Error"] != null)
+{
+	<div class="alert alert-danger m-3">@TempData["Error"]</div>
+}
 @if(Model.Any())
 {
 	<table class="table table-bordered table-hoverd">

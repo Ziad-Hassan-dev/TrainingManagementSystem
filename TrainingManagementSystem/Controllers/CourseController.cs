@@ -137,6 +137,14 @@ namespace TrainingManagementSystem.Controllers
             if (crs == null)
                 return NotFound("Course Not Found");
 
+            bool hasEnrollments =
+                context.CourseEnrollments.Any(e => e.CourseId == id);
+            if (hasEnrollments)
+            {
+                TempData["Error"] = "Cannot delete: this course has enrollments";
+                return RedirectToAction("Index");
+            }
+
             context.Courses.Remove(crs);
             context.SaveChanges();
 

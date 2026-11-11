@@ -138,9 +138,19 @@ namespace TrainingManagementSystem.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            CourseEnrollment enrollment = context.CourseEnrollments.FirstOrDefault(ce => ce.Id == id);
+            CourseEnrollment? enrollment = 
+                context.CourseEnrollments.FirstOrDefault(ce => ce.Id == id);
             if (enrollment == null)
                 return NotFound("CourseEnrollment Not Found");
+
+            bool hasResult =
+                context.CourseResults.Any(r => r.EnrollmentId == id);
+            if (hasResult)
+            {
+                TempData["Error"] = "Cannot delete: this enrollment has a result. Delete the result first";
+                return RedirectToAction("Index");
+            }
+
 
             context.CourseEnrollments.Remove(enrollment);
             context.SaveChanges();
