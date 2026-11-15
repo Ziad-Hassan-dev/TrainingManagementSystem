@@ -33,6 +33,7 @@ namespace TrainingManagementSystem.Controllers
 
             return View(vm);
         }
+        [ValidateAntiForgeryToken]
         [HttpPost, ActionName("Create")]
         public IActionResult ConfirmCreate(CourseEnrollmentFormViewModel enrollmentFromRequest)
         {
@@ -63,7 +64,8 @@ namespace TrainingManagementSystem.Controllers
                 enrollment.CourseId = enrollmentFromRequest.CourseId;
                 enrollment.TraineeId = enrollmentFromRequest.TraineeId;
                 context.CourseEnrollments.Add(enrollment);
-                context.SaveChanges();
+                context.SaveChanges(); 
+                TempData["Success"] = "CourseEnrollment created successfully";
                 return RedirectToAction("Index");                
             }
             enrollmentFromRequest.Course = new SelectList(context.Courses.ToList(), "Id", "Name");
@@ -93,6 +95,7 @@ namespace TrainingManagementSystem.Controllers
 
             return View(vm);
         }
+        [ValidateAntiForgeryToken]
         [HttpPost, ActionName("Edit")]
         public IActionResult ConfirmEdit(CourseEnrollmentFormViewModel enrollmentFromRequest)
         {
@@ -118,15 +121,16 @@ namespace TrainingManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                    CourseEnrollment? enrollment =
-                        context.CourseEnrollments.FirstOrDefault(ce => ce.Id == enrollmentFromRequest.Id);
+                CourseEnrollment? enrollment =
+                    context.CourseEnrollments.FirstOrDefault(ce => ce.Id == enrollmentFromRequest.Id);
 
-                    enrollment.EnrollmentDate = enrollmentFromRequest.EnrollmentDate;
-                    enrollment.Status = enrollmentFromRequest.Status;
-                    enrollment.CourseId = enrollmentFromRequest.CourseId;
-                    enrollment.TraineeId = enrollmentFromRequest.TraineeId;
-                    context.SaveChanges();
-                    return RedirectToAction("Index");
+                enrollment.EnrollmentDate = enrollmentFromRequest.EnrollmentDate;
+                enrollment.Status = enrollmentFromRequest.Status;
+                enrollment.CourseId = enrollmentFromRequest.CourseId;
+                enrollment.TraineeId = enrollmentFromRequest.TraineeId;
+                context.SaveChanges();
+                TempData["Success"] = "CourseEnrollment edited successfully";
+                return RedirectToAction("Index");
             }
 
             enrollmentFromRequest.Course = new SelectList(context.Courses.ToList(), "Id", "Name");
@@ -135,10 +139,12 @@ namespace TrainingManagementSystem.Controllers
         }
         #endregion
 
+        #region Delete
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            CourseEnrollment? enrollment = 
+            CourseEnrollment? enrollment =
                 context.CourseEnrollments.FirstOrDefault(ce => ce.Id == id);
             if (enrollment == null)
                 return NotFound("CourseEnrollment Not Found");
@@ -154,7 +160,9 @@ namespace TrainingManagementSystem.Controllers
 
             context.CourseEnrollments.Remove(enrollment);
             context.SaveChanges();
+            TempData["Success"] = "CourseEnrollment deleted successfully";
             return RedirectToAction("Index");
-        }
+        } 
+        #endregion
     }
 }

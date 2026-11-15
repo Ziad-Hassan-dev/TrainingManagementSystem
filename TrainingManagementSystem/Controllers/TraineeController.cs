@@ -25,7 +25,7 @@ namespace TrainingManagementSystem.Controllers
         {
             return View("Create");
         }
-
+        [ValidateAntiForgeryToken]
         [HttpPost,ActionName("Create")]
         public IActionResult ConfirmCreate(TraineeFormViewModel traineeFromRequest)
         {
@@ -39,6 +39,7 @@ namespace TrainingManagementSystem.Controllers
                 trainee.ImageURL = traineeFromRequest.ImageURL?.Trim() ?? "";
                 context.Trainees.Add(trainee);
                 context.SaveChanges();
+                TempData["Success"] = "Trainee created successfully";
                 return RedirectToAction("Index");
             }
 
@@ -68,7 +69,7 @@ namespace TrainingManagementSystem.Controllers
 
             return View(vm);
         }
-
+        [ValidateAntiForgeryToken]
         [HttpPost,ActionName("Edit")]
         public IActionResult ConfirmEdit(TraineeFormViewModel traineeFromRequest)
         {
@@ -84,6 +85,7 @@ namespace TrainingManagementSystem.Controllers
                 traineedb.ImageURL = traineeFromRequest.ImageURL?.Trim() ?? "";
 
                 context.SaveChanges();
+                TempData["Success"] = "Trainee edited successfully";
                 return RedirectToAction("Index");
             }
 
@@ -92,6 +94,7 @@ namespace TrainingManagementSystem.Controllers
         #endregion
 
         #region Delete
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult Delete(int id)
         {
@@ -109,6 +112,7 @@ namespace TrainingManagementSystem.Controllers
 
             context.Trainees.Remove(trainee);
             context.SaveChanges();
+            TempData["Success"] = "Trainee deleted successfully";
             return RedirectToAction("Index");
         } 
         #endregion

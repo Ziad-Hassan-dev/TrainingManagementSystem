@@ -15,6 +15,7 @@ namespace TrainingManagementSystem.ViewModel
         [Required]
         [EmailAddress]
         [UniqueEmailInstructorAttribute]
+        [StringLength(100)]
         public string Email { get; set; }
         [Required]
         [RegularExpression(@"^01[0125]\d{8}$", ErrorMessage = "Enter a valid Egyptian mobile number")]

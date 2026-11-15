@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata.Ecma335;
 using TrainingManagementSystem.Models;
 using TrainingManagementSystem.ViewModel;
 
@@ -22,6 +21,7 @@ namespace TrainingManagementSystem.Controllers
         {
             return View("Create");
         }
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult SaveDept(DepartmentFormViewModel deptFromRequest)
         {
@@ -32,6 +32,7 @@ namespace TrainingManagementSystem.Controllers
                 dept.Description = deptFromRequest.Description.Trim();
                 context.Departments.Add(dept);
                 context.SaveChanges();
+                TempData["Success"] = "Department created successfully";
                 return RedirectToAction("Index");
             }
             else
@@ -57,6 +58,7 @@ namespace TrainingManagementSystem.Controllers
 
             return View(vm);
         }
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult SaveEdit(DepartmentFormViewModel deptFromRequest, int id)
         {
@@ -71,6 +73,7 @@ namespace TrainingManagementSystem.Controllers
                 deptFromDB.Name = deptFromRequest.Name.Trim();
                 deptFromDB.Description = deptFromRequest.Description.Trim();
                 context.SaveChanges();
+                TempData["Success"] = "Deparment edited successfully";
                 return RedirectToAction("Index");
             }
             return View("Edit", deptFromRequest);
@@ -89,6 +92,7 @@ namespace TrainingManagementSystem.Controllers
             }
             return NotFound("Department Not Found");
         }
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult ConfirmDelete(int id)
         {
@@ -110,6 +114,7 @@ namespace TrainingManagementSystem.Controllers
 
             context.Departments.Remove(deptFromDB);
             context.SaveChanges();
+            TempData["Success"] = "Department deleted successfully";
             return RedirectToAction("Index");
         } 
         #endregion

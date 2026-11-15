@@ -34,6 +34,7 @@ namespace TrainingManagementSystem.Controllers
             };
             return View(vm);
         }
+        [ValidateAntiForgeryToken]
         [HttpPost, ActionName("Create")]
         public IActionResult ConfirmCreate(CourseFormViewModel crsFromRequest)
         {
@@ -47,20 +48,21 @@ namespace TrainingManagementSystem.Controllers
                 ModelState.AddModelError("InsId", "Please select a valid instructor");
             if (ModelState.IsValid)
             {
-                    Course newCourse = new Course()
-                    {
-                        Id = crsFromRequest.Id,
-                        Name = crsFromRequest.Name.Trim(),
-                        Description = crsFromRequest.Description.Trim(),
-                        Degree = crsFromRequest.Degree,
-                        MinDegree = crsFromRequest.MinDegree,
-                        Hours = crsFromRequest.Hours,
-                        DeptId = crsFromRequest.DeptId,
-                        InsId = crsFromRequest.InsId,
-                    };
-                    context.Courses.Add(newCourse);
-                    context.SaveChanges();
-                    return RedirectToAction("Index");
+                Course newCourse = new Course()
+                {
+                    Id = crsFromRequest.Id,
+                    Name = crsFromRequest.Name.Trim(),
+                    Description = crsFromRequest.Description.Trim(),
+                    Degree = crsFromRequest.Degree,
+                    MinDegree = crsFromRequest.MinDegree,
+                    Hours = crsFromRequest.Hours,
+                    DeptId = crsFromRequest.DeptId,
+                    InsId = crsFromRequest.InsId,
+                };
+                context.Courses.Add(newCourse);
+                context.SaveChanges();
+                TempData["Success"] = "Course created successfully";
+                return RedirectToAction("Index");
             }
 
             crsFromRequest.Departments = new SelectList(context.Departments.ToList(), "Id", "Name");
@@ -95,6 +97,7 @@ namespace TrainingManagementSystem.Controllers
             return View(vm);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost, ActionName("Edit")]
         public IActionResult ConfirmEdit(CourseFormViewModel crsFromRequest)
         {
@@ -120,6 +123,7 @@ namespace TrainingManagementSystem.Controllers
                 crsdb.DeptId = crsFromRequest.DeptId;
                 crsdb.InsId = crsFromRequest.InsId;
                 context.SaveChanges();
+                TempData["Success"] = "Course edited successfully";
                 return RedirectToAction("Index");
             }
 
@@ -130,6 +134,7 @@ namespace TrainingManagementSystem.Controllers
         #endregion
 
         #region Delete
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult Delete(int id)
         {
@@ -147,7 +152,7 @@ namespace TrainingManagementSystem.Controllers
 
             context.Courses.Remove(crs);
             context.SaveChanges();
-
+            TempData["Success"] = "Course deleted successfully";
             return RedirectToAction("Index");
         } 
         #endregion

@@ -31,7 +31,7 @@ namespace TrainingManagementSystem.Controllers
             return View(vm);
         }
 
-
+        [ValidateAntiForgeryToken]
         [HttpPost, ActionName("Create")]
         public IActionResult ConfirmCreate(InstructorFormViewModel insFromRequest)
         {
@@ -51,6 +51,7 @@ namespace TrainingManagementSystem.Controllers
                     insdb.ImageURL = insFromRequest.ImageURL?.Trim() ?? "";
                     context.Instructors.Add(insdb);
                     context.SaveChanges();
+                    TempData["Success"] = "Instructor created successfully";
                     return RedirectToAction("Index");
                 }
                 else
@@ -90,6 +91,7 @@ namespace TrainingManagementSystem.Controllers
 
             return NotFound();
         }
+        [ValidateAntiForgeryToken]
         [HttpPost,ActionName("Edit")]
         public IActionResult ConfirmEdit(InstructorFormViewModel insFromRequest)
         {
@@ -109,6 +111,7 @@ namespace TrainingManagementSystem.Controllers
                     insdb.ImageURL = insFromRequest.ImageURL?.Trim() ?? "";
                     insdb.DeptId = insFromRequest.DeptId;
                     context.SaveChanges();
+                    TempData["Success"] = "Instructor edited successfully";
                     return RedirectToAction("Index");
                 }
                 else
@@ -125,6 +128,7 @@ namespace TrainingManagementSystem.Controllers
         #endregion
 
         #region Delete
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult Delete(int id)
         {
@@ -143,6 +147,7 @@ namespace TrainingManagementSystem.Controllers
 
             context.Instructors.Remove(insdb);
             context.SaveChanges();
+            TempData["Success"] = "Instructor deleted successfully";
             return RedirectToAction("Index");
         }
 

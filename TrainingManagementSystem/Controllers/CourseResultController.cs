@@ -46,6 +46,7 @@ namespace TrainingManagementSystem.Controllers
             };
             return View("Create", vm);
         }
+        [ValidateAntiForgeryToken]
         [HttpPost, ActionName("Create")]
         public IActionResult ConfirmCreate(CourseResultFormViewModel resultFromRequest)
         {
@@ -70,6 +71,7 @@ namespace TrainingManagementSystem.Controllers
                 courseResult.ResultDate = resultFromRequest.ResultDate;
                 context.CourseResults.Add(courseResult);
                 context.SaveChanges();
+                TempData["Success"] = "CourseResult created successfully";
                 return RedirectToAction("Index");
             }
             var enrollments = context.CourseEnrollments.Select(e => new { Id = e.Id, Text = e.Trainee.Name + " " + e.Course.Name });
@@ -98,6 +100,7 @@ namespace TrainingManagementSystem.Controllers
             };
             return View(vm);
         }
+        [ValidateAntiForgeryToken]
         [HttpPost, ActionName("Edit")]
         public IActionResult ConfirmEdit(CourseResultFormViewModel resultFromRequest)
         {
@@ -119,6 +122,7 @@ namespace TrainingManagementSystem.Controllers
                 courseResult.Degree = resultFromRequest.Degree;
                 courseResult.ResultDate = resultFromRequest.ResultDate;
                 context.SaveChanges();
+                TempData["Success"] = "CourseResult edited successfully";
                 return RedirectToAction("Index");
             }
             var enrollments = context.CourseEnrollments
@@ -130,6 +134,7 @@ namespace TrainingManagementSystem.Controllers
         #endregion
 
         #region Delete
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult Delete(int id)
         {
@@ -139,6 +144,7 @@ namespace TrainingManagementSystem.Controllers
 
             context.CourseResults.Remove(courseResult);
             context.SaveChanges();
+            TempData["Success"] = "CourseResult deleted successfully";
             return RedirectToAction("Index");
         } 
         #endregion
